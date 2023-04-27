@@ -13,11 +13,13 @@ function CategoryPage(props) {
 
   const filteredSubCat = sublinks.filter(sublink => sublink.category === props.prodCategory);
 
+  const API = process.env.NEXT_PUBLIC_API_URL;
+
   const category = props.prodCategory;
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/produktai/${category}`)
+    fetch(`${API}/produktai/${category}`)
       .then((response) => response.json())
       .then((data) => {
         setFetchedProducts(data);
@@ -27,7 +29,7 @@ function CategoryPage(props) {
 
     // const filteredSubCat = sublinks.filter(sublink => sublink.category === props.prodCategory);
     // setSubcategory(filteredSubCat);
-  }, [category]);
+  }, [category, API]);
 
   const openProductHandler = (...props) => {
     const { id } = props[0];
@@ -69,24 +71,28 @@ export default CategoryPage;
 export async function getStaticProps(context) {
   const { req, res, params } = context;
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/produktai/${params.kategorija}`
-  );
-  const products = await response.json();
-
-  // console.log('Server Side');
-
-  // const prodId = params.id;
-  // console.log('REQ', req);
-  // console.log('RES', res);
-  // console.log('PARAMS', params);
-
-  return {
-    props: {
-      prodCategory: params.kategorija,
-      products: products,
-    },
-  };
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/produktai/${params.kategorija}`
+    );
+    const products = await response.json();
+  
+    // console.log('Server Side');
+  
+    // const prodId = params.id;
+    // console.log('REQ', req);
+    // console.log('RES', res);
+    // console.log('PARAMS', params);
+  
+    return {
+      props: {
+        prodCategory: params.kategorija,
+        products: products,
+      },
+    };
+  } catch(err) {
+    console.log(err.message);
+  }
 }
 
 export async function getStaticPaths() {
@@ -99,9 +105,9 @@ export async function getStaticPaths() {
   }));
 
   return {
-    // paths: pathsWithParams,
+    paths: pathsWithParams,
     // fallback: 'blocking',
-    paths: [],
+    // paths: [],
     fallback: true,
   };
 }

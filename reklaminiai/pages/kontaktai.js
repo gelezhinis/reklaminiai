@@ -1,6 +1,8 @@
+import ContactForm from "../components/ContactForm";
+
 function ContactPage() {
   return (
-    <h1>Kontaktų puslapis</h1>
+    <ContactForm />
   );
 };
 
